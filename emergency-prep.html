@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Severe Weather Preparedness Guide — MeteoClimatic</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+ :root {
+ --deep: #050d1a;
+ --ice: #c8e8ff;
+ --aurora: #00e5b0;
+ --mist: #8ab4d4;
+ --cloud: #ddeeff;
+ --red-alert: #ff4444;
+ --text: #e8f4ff;
+ --muted: #7aa3c4;
+ --card-bg: rgba(14, 34, 64, 0.85);
+ --border: rgba(100, 170, 220, 0.18);
+ --ad-bg: rgba(20, 50, 90, 0.9);
+ }
+
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ body { background: var(--deep); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.6; }
+
+ /* Nav minimal */
+ header { background: rgba(5, 13, 26, 0.92); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+ .logo { color: var(--ice); font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; text-decoration: none; letter-spacing: 2px; }
+ .back-link { color: var(--mist); text-decoration: none; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+ .back-link:hover { color: var(--aurora); }
+
+ /* Layout */
+ .page-wrapper { max-width: 1000px; margin: 3rem auto; padding: 0 1.5rem; }
+ .article-header { text-align: center; margin-bottom: 3rem; }
+ .article-title { font-family: 'Playfair Display', serif; font-size: 3rem; color: var(--cloud); line-height: 1.1; margin-bottom: 1rem; }
+ .article-meta { color: var(--aurora); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+
+ /* Content blocks */
+ .content-section { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 2.5rem; margin-bottom: 2.5rem; }
+ .content-section h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--red-alert); letter-spacing: 2px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 1.5rem; }
+ .content-section p { font-size: 1.05rem; color: var(--mist); margin-bottom: 1rem; }
+ .checklist { list-style: none; padding-left: 0; margin-top: 1.5rem; }
+ .checklist li { position: relative; padding-left: 30px; margin-bottom: 12px; font-size: 1.05rem; }
+ .checklist li::before { content: '✓'; position: absolute; left: 0; top: 0; color: var(--aurora); font-weight: bold; font-size: 1.2rem; }
+
+ /* Ad blocks */
+ .ad-banner { background: var(--ad-bg); border: 1px dashed rgba(100,170,220,0.3); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 3rem 0; padding: 2rem 0; text-align: center; position: relative; overflow: hidden; }
+ .ad-banner.leaderboard { height: 130px; }
+ .ad-banner.rectangle { width: 300px; height: 250px; margin: 0 auto 2rem auto; }
+ .ad-placeholder { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 3px; color: var(--muted); opacity: 0.6; }
+ .ad-sub { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+</style>
+</head>
+<body>
+
+<header>
+ <a href="index.html" class="logo">MeteoClimatic</a>
+ <a href="index.html" class="back-link">← Back to Home</a>
+</header>
+
+<div class="page-wrapper">
+ <div class="article-header">
+ <div class="article-meta">Free Educational Resource · Survival Series</div>
+ <h1 class="article-title">The Ultimate Severe Weather Preparedness Guide</h1>
+ <p style="color:var(--mist); font-size:1.1rem; max-width:600px; margin:0 auto;">Learn how to protect your family, fortify your home, and survive catastrophic storm events with expert meteorological insights.</p>
+ </div>
+
+ <!-- PREMIUM AD LEADERBOARD -->
+ <div class="ad-banner leaderboard">
+ <div class="ad-placeholder">ADVERTISEMENT — 728 × 90 LEADERBOARD</div>
+ <div class="ad-sub">Premium Placement for Survival Gear / Generators</div>
+ </div>
+
+ <div class="content-section">
+ <h2>1. The 72-Hour Emergency Kit</h2>
+ <p>When a Category 4 hurricane or severe supercell strikes, emergency services may be incapacitated for days. You must be self-reliant for at least 72 hours.</p>
+ <ul class="checklist">
+ <li><strong>Water Storage:</strong> 1 gallon per person, per day. Prioritize heavy-duty jerry cans over flimsy plastic jugs.</li>
+ <li><strong>Non-Perishable Food:</strong> High-calorie, nutrient-dense foods (MREs, protein bars, dehydrated camping meals).</li>
+ <li><strong>Tactical Flashlights & Power:</strong> Hand-crank weather radios, waterproof flashlights, and high-capacity solar power banks.</li>
+ <li><strong>First-Aid & Trauma:</strong> Tourniquets, pressure dressings, antiseptics, and a 30-day supply of prescription medications.</li>
+ </ul>
+ </div>
+
+ <!-- HIGH TICKET RECTANGLE AD -->
+ <div class="ad-banner rectangle">
+ <div class="ad-placeholder">300 × 250 AD</div>
+ <div class="ad-sub">Perfect for Tactical Brands</div>
+ </div>
+
+ <div class="content-section">
+ <h2>2. Fortifying Your Home Infrastructure</h2>
+ <p>Wind damage is rarely the primary killer in severe weather; it is structural failure and subsequent flooding. Securing the envelope of your home is your first line of defense.</p>
+ <p>Install storm shutters or have 5/8" exterior grade plywood pre-cut for all windows. Reinforce garage doors, as their failure instantly pressurizes the house, blowing the roof off from the inside out. Always ensure your sump pumps have marine-battery backups.</p>
+ </div>
+
+ <!-- PREMIUM AD LEADERBOARD -->
+ <div class="ad-banner leaderboard">
+ <div class="ad-placeholder">ADVERTISEMENT — 728 × 90 LEADERBOARD</div>
+ <div class="ad-sub">Premium Placement for Home Insurance / Shutters</div>
+ </div>
+
+</div>
+
+</body>
+</html>
