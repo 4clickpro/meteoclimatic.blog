@@ -1,3 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MeteoClimatic — Weather, Climate & Atmospheric Science Blog</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+ :root {
+ --sky: #0a1628;
+ --deep: #050d1a;
+ --ice: #c8e8ff;
+ --storm: #1e3a5f;
+ --lightning: #f5c842;
+ --aurora: #00e5b0;
+ --mist: #8ab4d4;
+ --cloud: #ddeeff;
+ --red-alert: #ff4444;
+ --warm: #ff8c42;
+ --text: #e8f4ff;
+ --muted: #7aa3c4;
+ --card-bg: rgba(14, 34, 64, 0.85);
+ --border: rgba(100, 170, 220, 0.18);
+ --ad-bg: rgba(20, 50, 90, 0.9);
+ }
+
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+ html { scroll-behavior: smooth; }
+
+ body {
+ background: var(--deep);
+ color: var(--text);
+ font-family: 'DM Sans', sans-serif;
+ font-weight: 300;
+ overflow-x: hidden;
+ line-height: 1.6;
+ }
+
+ /* ===== ANIMATED SKY BACKGROUND ===== */
+ .sky-bg {
+ position: fixed;
+ inset: 0;
+ z-index: -2;
+ background: linear-gradient(180deg, #010a18 0%, #0a1e40 40%, #0d2a55 70%, #071525 100%);
+ }
+
+ .stars {
+ position: fixed;
+ inset: 0;
+ z-index: -1;
+ overflow: hidden;
+ }
+
+ .star {
+ position: absolute;
+ background: white;
+ border-radius: 50%;
+ animation: twinkle var(--dur) ease-in-out infinite alternate;
+ }
+
+ @keyframes twinkle {
+ from { opacity: 0.1; transform: scale(0.8); }
+ to { opacity: 1; transform: scale(1.2); }
+ }
+
+ .aurora-layer {
+ position: fixed;
+ bottom: 0;
+ left: 0;
+ right: 0;
+ height: 40vh;
+ z-index: -1;
+ background: linear-gradient(180deg, transparent 0%, rgba(0,229,176,0.04) 50%, rgba(0,100,255,0.06) 100%);
+ animation: auroraShift 8s ease-in-out infinite alternate;
+ }
+
+ @keyframes auroraShift {
+ from { opacity: 0.5; transform: scaleX(1); }
+ to { opacity: 1; transform: scaleX(1.05); }
+ }
+
+ /* ===== CLOUDS DRIFTING ===== */
+ .cloud-layer {
+ position: fixed;
+ top: 0; left: 0; right: 0;
+ height: 200px;
+ z-index: -1;
+ overflow: hidden;
+ pointer-events: none;
+ }
+
+ .cloud-shape {
+ position: absolute;
+ background: rgba(180, 210, 255, 0.04);
+ border-radius: 50px;
+ filter: blur(20px);
+ animation: cloudDrift linear infinite;
+ }
+
+ @keyframes cloudDrift {
+ from { transform: translateX(-300px); }
+ to { transform: translateX(calc(100vw + 300px)); }
+ }
+
+ /* ===== HEADER / NAV ===== */
+ header {
+ position: sticky;
+ top: 0;
+ z-index: 1000;
+ background: rgba(5, 13, 26, 0.92);
+ backdrop-filter: blur(20px);
+ border-bottom: 1px solid var(--border);
+ padding: 0 2rem;
+ }
+
+ .nav-inner {
+ max-width: 1600px;
+ margin: 0 auto;
+ display: flex;
+ align-items: center;
+ gap: 2rem;
+ height: 64px;
+ }
+
+ .logo {
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ text-decoration: none;
+ flex-shrink: 0;
+ }
+
+ .logo-icon {
+ width: 38px;
+ height: 38px;
+ background: linear-gradient(135deg, var(--aurora), #0088ff);
+ border-radius: 10px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 20px;
+ }
+
+ .logo-text {
+ font-family: 'Bebas Neue', sans-serif;
+ font-size: 1.7rem;
+ letter-spacing: 2px;
+ background: linear-gradient(90deg, var(--ice), var(--aurora));
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+ background-clip: text;
+ }
+
+ .logo-sub {
+ font-size: 0.55rem;
+ text-transform: uppercase;
+ letter-spacing: 3px;
+ color: var(--muted);
+ font-weight: 500;
+ margin-top: -6px;
+ display: block;
+ -webkit-text-fill-color: var(--muted);
+ }
+
+ nav {
+ display: flex;
+ gap: 0.2rem;
+ flex: 1;
+ }
+ nav a {
+ color: var(--mist);
+ text-decoration: none;
+ font-size: 0.82rem;
+ font-weight: 500;
+ padding: 6px 14px;
+ border-radius: 6px;
+ transition: all 0.2s;
+ letter-spacing: 0.5px;
+ text-transform: uppercase;
+ }
+
+ nav a:hover {
+ color: var(--ice);
+ background: rgba(100, 180, 255, 0.1);
+ }
+
+ nav a.active {
+ color: var(--aurora);
+ background: rgba(0, 229, 176, 0.1);
+ }
+
+ .nav-actions {
+ display: flex;
+ gap: 10px;
+ align-items: center;
+ }
+
+ .btn-subscribe {
+ background: linear-gradient(135deg, var(--aurora), #0088ff);
+ color: #000;
+ border: none;
+ padding: 8px 20px;
+ border-radius: 20px;
+ font-size: 0.8rem;
+ font-weight: 600;
+ cursor: pointer;
+ text-transform: uppercase;
+ letter-spacing: 1px;
+ transition: transform 0.2s, box-shadow 0.2s;
+ }
+
+ .btn-subscribe:hover {
+ transform: translateY(-1px);
+ box-shadow: 0 4px 20px rgba(0, 229, 176, 0.4);
+ }
+
+ /* ===== BREAKING NEWS TICKER ===== */
+ .ticker-bar {
+ background: var(--red-alert);
+ padding: 6px 0;
+ overflow: hidden;
+ position: relative;
+ }
+
+ .ticker-inner {
+ display: flex;
+ align-items: center;
+ gap: 0;
+ }
+
+ .ticker-label {
+ background: #900;
+ color: white;
+ font-size: 0.7rem;
+ font-weight: 700;
+ letter-spacing: 2px;
+ text-transform: uppercase;
+ padding: 4px 14px;
+ flex-shrink: 0;
+ z-index: 1;
+ }
+
+ .ticker-scroll {
+ overflow: hidden;
+ flex: 1;
+ }
+
+ .ticker-track {
+ display: flex;
+ gap: 80px;
+ white-space: nowrap;
+ animation: tickerScroll 35s linear infinite;
+ font-size: 0.78rem;
+ font-weight: 600;
+ color: white;
+ letter-spacing: 0.5px;
+ padding: 3px 30px;
+ }
+
+ @keyframes tickerScroll {
+ from { transform: translateX(0); }
+ to { transform: translateX(-50%); }
+ }
+
+ /* ===== TOP LEADERBOARD AD ===== */
+ .ad-leaderboard {
+ background: var(--ad-bg);
+ border: 1px solid rgba(100,170,220,0.2);
+ border-left: 4px solid var(--lightning);
+ padding: 14px 20px;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ max-width: 100%;
+ overflow: hidden;
+ }
+
+ .ad-label {
+ font-size: 0.6rem;
+ text-transform: uppercase;
+ letter-spacing: 2px;
+ color: var(--muted);
+ margin-bottom: 4px;
+ }
+
+ .ad-content-728 {
+ width: 728px;
+ height: 90px;
+ background: linear-gradient(135deg, #1a3a6b, #0d2040);
+ border: 1px dashed rgba(100,170,220,0.3);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ border-radius: 6px;
+ margin: 0 auto;
+ position: relative;
+ overflow: hidden;
+ }
+
+ .ad-content-728::before {
+ content: '';
+ position: absolute;
+ inset: 0;
+ background: linear-gradient(90deg, transparent, rgba(0,229,176,0.05), transparent);
+ animation: adShimmer 3s ease-in-out infinite;
+ }
+
+ @keyframes adShimmer {
+ 0%, 100% { transform: translateX(-100%); }
+ 50% { transform: translateX(100%); }
+ }
+
+ .ad-placeholder-text {
+ font-family: 'Bebas Neue', sans-serif;
+ font-size: 1.1rem;
+ letter-spacing: 3px;
+ color: var(--muted);
+ opacity: 0.6;
+ }
+
+ .ad-size-label {
+ font-size: 0.65rem;
+ color: var(--muted);
+ opacity: 0.5;
+ margin-top: 4px;
+ text-align: center;
+ }
+
+ /* ===== HERO ===== */
+ .hero {
+ position: relative;
+ min-height: 85vh;
+ display: flex;
+ align-items: flex-end;
+ padding: 0 2rem 4rem;
+ overflow: hidden;
+ }
+
+ .hero-visual {
+ position: absolute;
+ inset: 0;
+ z-index: 0;
+ }
+
+ /* SVG Weather Scene */
+ .hero-svg {
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ }
+
+ .hero-gradient {
+ position: absolute;
+ inset: 0;
+ background: linear-gradient(0deg, rgba(5,13,26,1) 0%, rgba(5,13,26,0.6) 40%, rgba(5,13,26,0.1) 100%);
+ }
+
+ .hero-content {
+ position: relative;
+ z-index: 2;
+ max-width: 900px;
+ }
+ .hero-category {
+ display: inline-flex;
+ align-items: center;
+ gap: 8px;
+ font-size: 0.72rem;
+ font-weight: 600;
+ letter-spacing: 3px;
+ text-transform: uppercase;
+ color: var(--aurora);
+ margin-bottom: 1.2rem;
+ background: rgba(0,229,176,0.1);
+ padding: 5px 14px;
+ border-radius: 20px;
+ border: 1px solid rgba(0,229,176,0.25);
+ }
+
+ .hero-title {
+ font-family: 'Playfair Display', serif;
+ font-size: clamp(2.4rem, 6vw, 5.5rem);
+ font-weight: 900;
+ line-height: 1.05;
+ margin-bottom: 1.5rem;
+ color: var(--cloud);
+ }
+
+ .hero-title em {
+ color: var(--lightning);
+ font-style: italic;
+ }
+
+ .hero-desc {
+ font-size: 1.05rem;
+ color: var(--mist);
+ max-width: 600px;
+ margin-bottom: 2rem;
+ }
+
+ .hero-meta {
+ display: flex;
+ align-items: center;
+ gap: 20px;
+ font-size: 0.8rem;
+ color: var(--muted);
+ }
+
+ .hero-meta .author-avatar {
+ width: 38px;
+ height: 38px;
+ border-radius: 50%;
+ background: linear-gradient(135deg, var(--storm), var(--aurora));
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 1rem;
+ flex-shrink: 0;
+ }
+
+ .read-btn {
+ display: inline-flex;
+ align-items: center;
+ gap: 8px;
+ background: var(--lightning);
+ color: #000;
+ text-decoration: none;
+ padding: 12px 28px;
+ border-radius: 6px;
+ font-weight: 700;
+ font-size: 0.85rem;
+ letter-spacing: 1px;
+ text-transform: uppercase;
+ transition: all 0.25s;
+ }
+
+ .read-btn:hover {
+ background: white;
+ transform: translateX(4px);
+ }
+
+ /* ===== MAIN LAYOUT ===== */
+ .page-wrapper {
+ max-width: 1600px;
+ margin: 0 auto;
+ padding: 0 1.5rem;
+ }
+
+ .main-grid {
+ display: grid;
+ grid-template-columns: 1fr 300px;
+ gap: 2.5rem;
+ margin: 3rem 0;
+ }
+
+ /* ===== SECTION HEADERS ===== */
+ .section-head {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ margin-bottom: 1.5rem;
+ padding-bottom: 12px;
+ border-bottom: 1px solid var(--border);
+ }
+
+ .section-title {
+ font-family: 'Bebas Neue', sans-serif;
+ font-size: 1.8rem;
+ letter-spacing: 3px;
+ color: var(--ice);
+ }
+
+ .section-title span {
+ color: var(--aurora);
+ }
+
+ .see-all {
+ font-size: 0.75rem;
+ color: var(--aurora);
+ text-decoration: none;
+ text-transform: uppercase;
+ letter-spacing: 1.5px;
+ font-weight: 600;
+ }
+
+ /* ===== FEATURED GRID ===== */
+ .featured-grid {
+ display: grid;
+ grid-template-columns: repeat(3, 1fr);
+ gap: 1.5rem;
+ margin-bottom: 3rem;
+ }
+
+ /* ===== ARTICLE CARDS ===== */
+ .card {
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ overflow: hidden;
+ transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+ cursor: pointer;
+ position: relative;
+ }
+
+ .card:hover {
+ transform: translateY(-5px);
+ box-shadow: 0 20px 60px rgba(0, 100, 200, 0.25);
+ border-color: rgba(100,200,255,0.35);
+ }
+
+ .card-img {
+ width: 100%;
+ aspect-ratio: 16/9;
+ position: relative;
+ overflow: hidden;
+ }
+
+ .card-img svg {
+ width: 100%;
+ height: 100%;
+ }
+
+ .card-badge {
+ position: absolute;
+ top: 12px;
+ left: 12px;
+ font-size: 0.65rem;
+ font-weight: 700;
+ letter-spacing: 1.5px;
+ text-transform: uppercase;
+ padding: 3px 10px;
+ border-radius: 12px;
+ z-index: 1;
+ }
+
+ .badge-storm { background: #ff4444; color: white; }
+ .badge-climate { background: var(--aurora); color: #000; }
+ .badge-research { background: var(--lightning); color: #000; }
+ .badge-forecast { background: #6060ff; color: white; }
+ .badge-extreme { background: #ff8c00; color: white; }
+ .badge-polar { background: #00aaff; color: white; }
+ .badge-tropical { background: #ff6b6b; color: white; }
+ .badge-snow { background: #aaddff; color: #000; }
+
+ .card-body {
+ padding: 1.2rem;
+ }
+ /* ===== CATEGORIES GRID ===== */
+ .categories-grid {
+ display: grid;
+ grid-template-columns: repeat(6, 1fr);
+ gap: 1rem;
+ margin-bottom: 3rem;
+ }
+
+ .cat-card {
+ background: var(--card-bg);
+ border: 1px solid var(--border);
+ border-radius: 10px;
+ padding: 1.2rem 0.8rem;
+ text-align: center;
+ cursor: pointer;
+ transition: all 0.3s;
+ }
+
+ .cat-card:hover {
+ transform: translateY(-4px);
+ border-color: var(--aurora);
+ background: rgba(0,229,176,0.08);
+ }
+
+ .cat-icon { font-size: 2rem; margin-bottom: 8px; }
+
+ .cat-name {
+ font-size: 0.75rem;
+ font-weight: 600;
+ text-transform: uppercase;
+ letter-spacing: 1.5px;
+ color: var(--mist);
+ }
+
+ .cat-count {
+ font-family: 'DM Mono', monospace;
+ font-size: 0.65rem;
+ color: var(--muted);
+ margin-top: 4px;
+ }
+
+ /* ===== NEWSLETTER ===== */
+ .newsletter {
+ background: linear-gradient(135deg, #0d2040, #1a3a6b);
+ border: 1px solid rgba(0,229,176,0.2);
+ border-radius: 16px;
+ padding: 3rem;
+ text-align: center;
+ margin: 3rem 0;
+ position: relative;
+ overflow: hidden;
+ }
+
+ .newsletter::before {
+ content: '';
+ position: absolute;
+ top: -60px; right: -60px;
+ width: 250px; height: 250px;
+ background: radial-gradient(circle, rgba(0,229,176,0.08), transparent);
+ border-radius: 50%;
+ }
+
+ .newsletter::after {
+ content: '';
+ position: absolute;
+ bottom: -60px; left: -60px;
+ width: 200px; height: 200px;
+ background: radial-gradient(circle, rgba(0,100,255,0.08), transparent);
+ border-radius: 50%;
+ }
+
+ .newsletter-title {
+ font-family: 'Playfair Display', serif;
+ font-size: 2.2rem;
+ font-weight: 900;
+ color: var(--cloud);
+ margin-bottom: 0.8rem;
+ position: relative;
+ z-index: 1;
+ }
+
+ .newsletter-sub {
+ color: var(--mist);
+ font-size: 0.95rem;
+ margin-bottom: 1.8rem;
+ position: relative;
+ z-index: 1;
+ }
+
+ .newsletter-form {
+ display: flex;
+ gap: 10px;
+ max-width: 500px;
+ margin: 0 auto;
+ position: relative;
+ z-index: 1;
+ }
+
+ .newsletter-input {
+ flex: 1;
+ background: rgba(255,255,255,0.08);
+ border: 1px solid rgba(100,200,255,0.25);
+ color: var(--text);
+ padding: 12px 18px;
+ border-radius: 8px;
+ font-size: 0.9rem;
+ font-family: 'DM Sans', sans-serif;
+ outline: none;
+ transition: border-color 0.2s;
+ }
+
+ .newsletter-input:focus {
+ border-color: var(--aurora);
+ }
+
+ .newsletter-input::placeholder { color: var(--muted); }
+
+ .newsletter-btn {
+ background: linear-gradient(135deg, var(--aurora), #0088ff);
+ color: #000;
+ border: none;
+ padding: 12px 24px;
+ border-radius: 8px;
+ font-weight: 700;
+ font-size: 0.85rem;
+ cursor: pointer;
+ letter-spacing: 1px;
+ text-transform: uppercase;
+ white-space: nowrap;
+ transition: all 0.25s;
+ }
+
+ .newsletter-btn:hover {
+ transform: translateY(-2px);
+ box-shadow: 0 6px 24px rgba(0,229,176,0.35);
+ }
+
+ /* ===== FULL-WIDTH AD BANNER ===== */
+ .ad-fullwidth {
+ width: 100%;
+ height: 120px;
+ background: linear-gradient(90deg, #0d1e38, #1a2e50, #0d1e38);
+ border-top: 1px solid var(--border);
+ border-bottom: 1px solid var(--border);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ margin: 2rem 0;
+ position: relative;
+ overflow: hidden;
+ }
+
+ .ad-fullwidth::before {
+ content: '';
+ position: absolute;
+ inset: 0;
+ background: linear-gradient(90deg, transparent, rgba(245,200,66,0.04), rgba(0,229,176,0.04), transparent);
+ animation: adShimmer 5s ease-in-out infinite;
+ }
+
+ /* ===== STATS BAR ===== */
+ .stats-bar {
+ background: linear-gradient(90deg, var(--storm), #1e4080);
+ border-radius: 12px;
+ padding: 1.5rem 2rem;
+ display: grid;
+ grid-template-columns: repeat(4, 1fr);
+ gap: 1rem;
+ margin: 2rem 0;
+ }
+
+ .stat-item {
+ text-align: center;
+ }
+
+ .stat-num {
+ font-family: 'Bebas Neue', sans-serif;
+ font-size: 2.2rem;
+ color: var(--aurora);
+ letter-spacing: 2px;
+ }
+ .stat-label {
+ font-size: 0.72rem;
+ text-transform: uppercase;
+ letter-spacing: 1.5px;
+ color: var(--muted);
+ font-weight: 500;
+ }
+
+ /* ===== FOOTER ===== */
+ footer {
+ background: rgba(5,13,26,0.98);
+ border-top: 1px solid var(--border);
+ padding: 3rem 0 2rem;
+ margin-top: 4rem;
+ }
+
+ .footer-inner {
+ max-width: 1600px;
+ margin: 0 auto;
+ padding: 0 2rem;
+ }
+
+ .footer-grid {
+ display: grid;
+ grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+ gap: 2rem;
+ margin-bottom: 2.5rem;
+ }
+
+ .footer-brand .logo { margin-bottom: 1rem; }
+
+ .footer-desc {
+ font-size: 0.82rem;
+ color: var(--muted);
+ line-height: 1.6;
+ margin-bottom: 1.2rem;
+ }
+
+ .footer-socials {
+ display: flex;
+ gap: 10px;
+ }
+
+ .social-btn {
+ width: 36px;
+ height: 36px;
+ border-radius: 8px;
+ border: 1px solid var(--border);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 0.9rem;
+ cursor: pointer;
+ transition: all 0.2s;
+ background: rgba(255,255,255,0.03);
+ }
+
+ .social-btn:hover {
+ background: rgba(0,229,176,0.1);
+ border-color: var(--aurora);
+ }
+
+ .footer-col h4 {
+ font-family: 'Bebas Neue', sans-serif;
+ font-size: 1rem;
+ letter-spacing: 2px;
+ color: var(--ice);
+ margin-bottom: 1rem;
+ }
+
+ .footer-col ul {
+ list-style: none;
+ display: flex;
+ flex-direction: column;
+ gap: 8px;
+ }
+
+ .footer-col ul li a {
+ font-size: 0.8rem;
+ color: var(--muted);
+ text-decoration: none;
+ transition: color 0.2s;
+ }
+
+ .footer-col ul li a:hover { color: var(--aurora); }
+
+ .footer-bottom {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding-top: 1.5rem;
+ border-top: 1px solid var(--border);
+ font-size: 0.75rem;
+ color: var(--muted);
+ }
+
+ /* ===== UTILITY ===== */
+ .divider {
+ height: 1px;
+ background: var(--border);
+ margin: 2rem 0;
+ }
+
+ .flex-gap { display: flex; gap: 1rem; align-items: center; }
+
+ .text-aurora { color: var(--aurora); }
+ .text-lightning { color: var(--lightning); }
+
+ /* ===== LIVE BADGE ===== */
+ .live-badge {
+ display: inline-flex;
+ align-items: center;
+ gap: 5px;
+ font-size: 0.65rem;
+ font-weight: 700;
+ letter-spacing: 1.5px;
+ color: var(--red-alert);
+ text-transform: uppercase;
+ }
+
+ .live-dot {
+ width: 7px;
+ height: 7px;
+ background: var(--red-alert);
+ border-radius: 50%;
+ animation: livePulse 1.5s ease-in-out infinite;
+ }
+
+ @keyframes livePulse {
+ 0%, 100% { opacity: 1; transform: scale(1); }
+ 50% { opacity: 0.5; transform: scale(0.7); }
+ }
+
+ /* ===== RESPONSIVE ===== */
+ @media (max-width: 1100px) {
+ .main-grid { grid-template-columns: 1fr; }
+ .sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+ .categories-grid { grid-template-columns: repeat(3, 1fr); }
+ .featured-grid { grid-template-columns: repeat(2, 1fr); }
+ .card-large { grid-column: span 2; }
+ .footer-grid { grid-template-columns: 1fr 1fr 1fr; }
+ .stats-bar { grid-template-columns: repeat(2, 1fr); }
+ }
+
+ @media (max-width: 768px) {
+ .nav-inner { gap: 1rem; }
+ nav { display: none; }
+ .hero-title { font-size: 2.2rem; }
+ .featured-grid { grid-template-columns: 1fr; }
+ .card-large { grid-column: span 1; }
+ .ad-double { grid-template-columns: 1fr; }
+ .categories-grid { grid-template-columns: repeat(3, 1fr); }
+ .footer-grid { grid-template-columns: 1fr; }
+ .newsletter-form { flex-direction: column; }
+ .stats-bar { grid-template-columns: repeat(2, 1fr); }
+ }
+</style>
+</head>
+<body>
+<!-- ===== SKY BACKGROUND ===== -->
+<div class="sky-bg"></div>
+<div class="aurora-layer"></div>
+<div class="stars" id="stars"></div>
+<div class="cloud-layer" id="clouds"></div>
+
+<!-- ===== BREAKING NEWS TICKER ===== -->
+<div class="ticker-bar">
+ <div class="ticker-inner">
+ <div class="ticker-label">⚡ LIVE</div>
+ <div class="ticker-scroll">
+ <div class="ticker-track" id="ticker">
+ 🌪️ Category 4 Hurricane MARINA approaches Gulf Coast — Landfall expected Friday · · ·
+ 🌡️ Record-breaking heat wave scorches Southern Europe — temps exceeding 48°C · · ·
+ 🌨️ Polar vortex disruption signals severe winter across North America · · ·
+ 🌊 Sea surface temperatures in Atlantic hit all-time record high · · ·
+ ⛈️ Severe thunderstorm outbreak sweeps through Central Plains · · ·
+ 🌬️ Jet stream anomalies linked to unprecedented weather patterns · · ·
+ ❄️ Arctic ice extent reaches second-lowest level on record · · ·
+ 🌪️ Category 4 Hurricane MARINA approaches Gulf Coast — Landfall expected Friday · · ·
+ 🌡️ Record-breaking heat wave scorches Southern Europe — temps exceeding 48°C · · ·
+ 🌨️ Polar vortex disruption signals severe winter across North America · · ·
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header>
+ <div class="nav-inner">
+ <a href="#" class="logo">
+ <div class="logo-icon">🌩️</div>
+ <div>
+ <div class="logo-text">MeteoClimatic</div>
+ <span class="logo-sub">Weather · Climate · Science</span>
+ </div>
+ </a>
+ <nav>
+ <a href="#" class="active">Home</a>
+ <a href="#">Forecasts</a>
+ <a href="#">Storms</a>
+ <a href="#">Climate</a>
+ <a href="#">Research</a>
+ <a href="#">Extreme Events</a>
+ <a href="#">Maps & Data</a>
+ <a href="#">Polar</a>
+ <a href="#">Tropical</a>
+ <a href="#">Community</a>
+ </nav>
+ <div class="nav-actions">
+ <div class="live-badge"><div class="live-dot"></div> Live Updates</div>
+ <button class="btn-subscribe">Subscribe</button>
+ </div>
+ </div>
+</header>
+
+<!-- ===== TOP LEADERBOARD AD ===== -->
+<div class="ad-leaderboard">
+ <div style="text-align:center;width:100%;">
+ <div class="ad-label">Advertisement</div>
+ <div class="ad-content-728">
+ <div>
+ <div class="ad-placeholder-text">ADVERTISEMENT — 728 × 90 LEADERBOARD</div>
+ <div class="ad-size-label">Premium Banner Space Available</div>
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+ <div class="hero-visual">
+ <!-- SVG HERO SCENE: Hurricane from space -->
+ <svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" class="hero-svg" preserveAspectRatio="xMidYMid slice">
+ <defs>
+ <radialGradient id="hg1" cx="50%" cy="40%" r="70%">
+ <stop offset="0%" stop-color="#0a1e4a"/>
+ <stop offset="100%" stop-color="#020810"/>
+ </radialGradient>
+ <radialGradient id="hurr" cx="55%" cy="35%" r="35%">
+ <stop offset="0%" stop-color="#132040" stop-opacity="0.9"/>
+ <stop offset="40%" stop-color="#1a4a80" stop-opacity="0.7"/>
+ <stop offset="80%" stop-color="#0d2040" stop-opacity="0.4"/>
+ <stop offset="100%" stop-color="transparent"/>
+ </radialGradient>
+ <radialGradient id="eye" cx="50%" cy="50%" r="50%">
+ <stop offset="0%" stop-color="#0a1828" stop-opacity="1"/>
+ <stop offset="60%" stop-color="#0a1828" stop-opacity="0.8"/>
+ <stop offset="100%" stop-color="transparent"/>
+ </radialGradient>
+ <filter id="glow">
+ <feGaussianBlur stdDeviation="8" result="blur"/>
+ <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+ </filter>
+ <filter id="softblur">
+ <feGaussianBlur stdDeviation="15"/>
+ </filter>
+ </defs>
+ <rect width="1600" height="900" fill="url(#hg1)"/>
+ <!-- Stars -->
+ <g opacity="0.6">
+ <circle cx="80" cy="60" r="1.5" fill="white"/><circle cx="240" cy="40" r="1" fill="white"/>
+ <circle cx="400" cy="80" r="1.5" fill="white"/><circle cx="600" cy="30" r="1" fill="white"/>
+ <circle cx="800" cy="70" r="2" fill="white"/><circle cx="1000" cy="20" r="1.5" fill="white"/>
+ <circle cx="1200" cy="55" r="1" fill="white"/><circle cx="1400" cy="35" r="1.5" fill="white"/>
+ <circle cx="150" cy="120" r="1" fill="white"/><circle cx="350" cy="150" r="1.5" fill="white"/>
+ <circle cx="500" cy="100" r="1" fill="white"/><circle cx="700" cy="140" r="1" fill="white"/>
+ <circle cx="900" cy="90" r="1.5" fill="white"/><circle cx="1100" cy="130" r="1" fill="white"/>
+ <circle cx="1300" cy="100" r="1" fill="white"/><circle cx="1500" cy="120" r="1.5" fill="white"/>
+ </g>
+
+ <!-- Hurricane spiral - outer bands -->
+ <g transform="translate(960, 350)">
+ <!-- Outer spiral bands -->
+ <ellipse cx="0" cy="0" rx="400" ry="300" fill="none" stroke="#2060a0" stroke-width="60" stroke-opacity="0.12" stroke-dasharray="800 400" transform="rotate(-30)"/>
+ <ellipse cx="0" cy="0" rx="320" ry="240" fill="none" stroke="#3070b0" stroke-width="50" stroke-opacity="0.15" stroke-dasharray="600 300" transform="rotate(20)"/>
+ <ellipse cx="0" cy="0" rx="240" ry="180" fill="none" stroke="#4080c0" stroke-width="40" stroke-opacity="0.2" stroke-dasharray="400 200" transform="rotate(-10)"/>
+ <ellipse cx="0" cy="0" rx="160" ry="120" fill="none" stroke="#5090d0" stroke-width="35" stroke-opacity="0.25" stroke-dasharray="280 140" transform="rotate(40)"/>
+ <ellipse cx="0" cy="0" rx="90" ry="70" fill="none" stroke="#70b0e0" stroke-width="30" stroke-opacity="0.3" stroke-dasharray="150 80" transform="rotate(-20)"/>
+
+ <!-- Hurricane cloud mass -->
+ <ellipse cx="0" cy="0" rx="380" ry="280" fill="url(#hurr)"/>
+
+ <!-- Eye wall -->
+ <circle cx="0" cy="0" r="55" fill="none" stroke="#a0c8f0" stroke-width="20" stroke-opacity="0.35"/>
+ <circle cx="0" cy="0" r="38" fill="url(#eye)"/>
+ <circle cx="0" cy="0" r="28" fill="#060f20" opacity="0.95"/>
+ <circle cx="0" cy="0" r="12" fill="#0a1828" opacity="0.8"/>
+
+ <!-- Lightning in storm -->
+ <line x1="60" y1="-80" x2="80" y2="-30" stroke="#f5c842" stroke-width="2" opacity="0.8"/>
+ <line x1="80" y1="-30" x2="70" y2="10" stroke="#f5c842" stroke-width="2" opacity="0.8"/>
+ <line x1="-120" y1="40" x2="-100" y2="80" stroke="#f5c842" stroke-width="1.5" opacity="0.6"/>
+ <line x1="150" y1="60" x2="135" y2="100" stroke="#f5c842" stroke-width="1.5" opacity="0.6"/>
+ </g>
+
+ <!-- Ocean below -->
+ <rect x="0" y="600" width="1600" height="300" fill="#040e20" opacity="0.9"/>
+ <path d="M0 620 Q200 600 400 620 Q600 640 800 615 Q1000 590 1200 615 Q1400 640 1600 620 L1600 900 L0 900Z" fill="#060e22" opacity="0.8"/>
+
+ <!-- Ocean waves -->
+ <g stroke="#1a4a80" stroke-width="1.5" fill="none" opacity="0.4">
+ <path d="M0 650 Q100 640 200 650 Q300 660 400 650 Q500 640 600 650"/>
+ <path d="M200 680 Q350 668 500 680 Q650 692 800 680 Q950 668 1100 680"/>
+ <path d="M100 710 Q300 698 500 710 Q700 722 900 710 Q1100 698 1300 710"/>
+ <path d="M0 740 Q200 728 400 740 Q600 752 800 740 Q1000 728 1200 740 Q1400 752 1600 740"/>
+ </g>
+
+ <!-- Aurora-like glow -->
+ <path d="M0 500 Q400 450 800 480 Q1200 510 1600 470 L1600 600 Q1200 620 800 600 Q400 580 0 600Z" 
+ fill="url(#hurr)" opacity="0.15" filter="url(#softblur)"/>
+
+ <!-- Atmospheric glow effects -->
+ <ellipse cx="400" cy="300" rx="200" ry="100" fill="#0040a0" opacity="0.06" filter="url(#softblur)"/>
+ <ellipse cx="1200" cy="450" rx="150" ry="80" fill="#00e5b0" opacity="0.04" filter="url(#softblur)"/>
+ </svg>
+ <div class="hero-gradient"></div>
+ </div>
+ <div class="page-wrapper" style="width:100%; position:relative; z-index:2;">
+ <div class="hero-content">
+ <div class="hero-category">
+ <div class="live-dot"></div>
+ 🌀 Hurricane Watch · LIVE COVERAGE
+ </div>
+ <h1 class="hero-title">
+ Hurricane <em>MARINA</em><br>
+ Intensifies to<br>Category 4 Storm
+ </h1>
+ <p class="hero-desc">Maximum sustained winds of 145 mph with rapid intensification underway. MARINA is projected to make landfall along the Gulf Coast within 72 hours. Meteorologists warn of catastrophic storm surge and extreme rainfall totals.</p>
+ <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+ <a href="#" class="read-btn">Read Full Coverage →</a>
+ <div class="hero-meta">
+ <div class="author-avatar">👨‍🔬</div>
+ <div>
+ <div style="color:var(--cloud); font-weight:600;">Dr. Marcus Holloway</div>
+ <div>Senior Hurricane Specialist · March 25, 2026</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="page-wrapper">
+
+ <!-- STATS BAR -->
+ <div class="stats-bar">
+ <div class="stat-item">
+ <div class="stat-num">14,200+</div>
+ <div class="stat-label">Articles Published</div>
+ </div>
+ <div class="stat-item">
+ <div class="stat-num">3.8M</div>
+ <div class="stat-label">Monthly Readers</div>
+ </div>
+ <div class="stat-item">
+ <div class="stat-num">847</div>
+ <div class="stat-label">Live Weather Stations</div>
+ </div>
+ <div class="stat-item">
+ <div class="stat-num">142</div>
+ <div class="stat-label">Expert Contributors</div>
+ </div>
+ </div>
+
+ <!-- ===== MAIN GRID ===== -->
+ <div class="main-grid">
+
+ <!-- MAIN COLUMN -->
+ <main>
+ <!-- FEATURED SECTION -->
+ <div class="section-head">
+ <div class="section-title">⚡ <span>FEATURED</span> STORIES</div>
+ <a href="#" class="see-all">View All →</a>
+ </div>
+
+ <div class="featured-grid">
+ <!-- Card 1 - Large -->
+ <div class="card card-large">
+ <div class="card-img">
+ <!-- SVG: Lightning Storm over city -->
+ <svg viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+ <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+ <stop offset="0%" stop-color="#050d1a"/>
+ <stop offset="60%" stop-color="#0a1e3a"/>
+ <stop offset="100%" stop-color="#1a1000"/>
+ </linearGradient>
+ <radialGradient id="flash" cx="50%" cy="30%" r="60%">
+ <stop offset="0%" stop-color="#fff9d0" stop-opacity="0.3"/>
+ <stop offset="100%" stop-color="transparent"/>
+ </radialGradient>
+ </defs>
+ <rect width="800" height="360" fill="url(#sky1)"/>
+ <!-- Storm clouds -->
+ <ellipse cx="200" cy="80" rx="180" ry="70" fill="#0d1e35" opacity="0.9"/>
+ <ellipse cx="350" cy="60" rx="200" ry="80" fill="#0e2040" opacity="0.95"/>
+ <ellipse cx="550" cy="75" rx="220" ry="75" fill="#0a1830" opacity="0.9"/>
+ <ellipse cx="700" cy="90" rx="160" ry="65" fill="#0c1c35" opacity="0.85"/>
+ <!-- Flash glow -->
+ <ellipse cx="400" cy="100" rx="300" ry="150" fill="url(#flash)"/>
+ <!-- Lightning bolts -->
+ <polyline points="380,90 360,160 375,160 340,280" stroke="#f5c842" stroke-width="4" fill="none"/>
+ <polyline points="380,90 372,165 375,160" stroke="white" stroke-width="1.5" fill="none" opacity="0.8"/>
+ <polyline points="520,70 505,130 518,130 500,230" stroke="#f5c842" stroke-width="2.5" fill="none" opacity="0.7"/>
+ <polyline points="180,100 170,155 180,155 160,240" stroke="#f5c842" stroke-width="2" fill="none" opacity="0.5"/>
+ <!-- City silhouette -->
+ <rect x="0" y="260" width="800" height="100" fill="#050d18"/>
+ <rect x="20" y="230" width="30" height="30" fill="#050d18"/>
+ <rect x="60" y="210" width="40" height="50" fill="#060e1a"/>
+ <rect x="110" y="195" width="50" height="65" fill="#050d18"/>
+ <rect x="170" y="220" width="35" height="40" fill="#060e1a"/>
+ <rect x="215" y="200" width="60" height="60" fill="#050d18"/>
+ <rect x="285" y="185" width="45" height="75" fill="#060e1a"/>
+ <rect x="340" y="205" width="40" height="55" fill="#050d18"/>
+ <rect x="390" y="175" width="55" height="85" fill="#060e1a"/>
+ <rect x="455" y="190" width="45" height="70" fill="#050d18"/>
+ <rect x="510" y="215" width="35" height="45" fill="#060e1a"/>
+ <rect x="555" y="195" width="50" height="65" fill="#050d18"/>
+ <rect x="615" y="210" width="40" height="50" fill="#060e1a"/>
+ <rect x="665" y="225" width="30" height="35" fill="#050d18"/>
+ <rect x="705" y="200" width="50" height="60" fill="#060e1a"/>
+ <rect x="765" y="235" width="35" height="25" fill="#050d18"/>
+ <!-- Windows glow -->
+ <g fill="#f5c842" opacity="0.3">
+ <rect x="65" y="215" width="5" height="4"/><rect x="73" y="215" width="5" height="4"/>
+ <rect x="65" y="225" width="5" height="4"/><rect x="73" y="225" width="5" height="4"/>
+ <rect x="115" y="200" width="5" height="4"/><rect x="125" y="200" width="5" height="4"/>
+ <rect x="395" y="180" width="5" height="4"/><rect x="405" y="180" width="5" height="4"/>
+ <rect x="395" y="190" width="5" height="4"/><rect x="415" y="190" width="5" height="4"/>
+ </g>
+ </svg>
+ <span class="card-badge badge-storm">⚡ SEVERE STORM</span>
+ </div>
+ <div class="card-body">
+ <div class="card-category">Extreme Weather · Analysis</div>
+ <h3 class="card-title">Supercell Outbreak Produces 47 Tornadoes Across Tornado Alley in Single 24-Hour Period</h3>
+ <p class="card-excerpt">A historic severe weather outbreak tore through Oklahoma, Kansas, and Nebraska leaving a trail of destruction. Meteorologists are calling it the most significant tornado outbreak since the 2011 Super Outbreak, with multiple EF4 twisters confirmed on the ground simultaneously.</p>
+ <div class="card-footer">
+ <div class="card-author">
+ <div class="mini-avatar">🌀</div>
+ <span>Elena Vasquez · 4h ago</span>
+ </div>
+ <div class="card-stats">
+ <span>👁 42.1K</span>
+ <span>💬 318</span>
+ <span>⏱ 8 min</span>
+ </div>
+ </div>
+ </div>
+ </div>
+ <!-- Card 2 -->
+ <div class="card">
+ <div class="card-img">
+ <!-- SVG: Polar ice melting -->
+ <svg viewBox="0 0 400 225" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+ <linearGradient id="arcticSky" x1="0" y1="0" x2="0" y2="1">
+ <stop offset="0%" stop-color="#001428"/>
+ <stop offset="50%" stop-color="#00315a"/>
+ <stop offset="100%" stop-color="#004070"/>
+ </linearGradient>
+ <linearGradient id="ocean" x1="0" y1="0" x2="0" y2="1">
+ <stop offset="0%" stop-color="#003366"/>
+ <stop offset="100%" stop-color="#001a33"/>
+ </linearGradient>
+ </defs>
+ <rect width="400" height="225" fill="url(#arcticSky)"/>
+ <!-- Aurora ribbons -->
+ <path d="M0 60 Q100 40 200 55 Q300 70 400 50" stroke="#00e5b0" stroke-width="15" fill="none" opacity="0.15" stroke-linecap="round"/>
+ <path d="M0 80 Q150 60 300 75 Q350 80 400 70" stroke="#00aaff" stroke-width="10" fill="none" opacity="0.12" stroke-linecap="round"/>
+ <!-- Ocean -->
+ <rect x="0" y="140" width="400" height="85" fill="url(#ocean)"/>
+ <!-- Ice sheets -->
+ <path d="M0 145 Q40 135 80 140 Q120 145 160 138 Q200 131 240 140 Q280 149 320 142 Q360 135 400 140 L400 165 Q340 155 280 162 Q220 169 160 160 Q100 151 40 160 Q20 163 0 162Z" fill="#c8e8ff" opacity="0.9"/>
+ <!-- Iceberg -->
+ <polygon points="200,80 230,140 170,140" fill="#ddeeff" opacity="0.85"/>
+ <polygon points="200,80 225,110 175,110" fill="white" opacity="0.6"/>
+ <!-- Floating ice chunks -->
+ <ellipse cx="80" cy="148" rx="30" ry="10" fill="#c8e8ff" opacity="0.7"/>
+ <ellipse cx="320" cy="145" rx="25" ry="8" fill="#ddeeff" opacity="0.65"/>
+ <ellipse cx="50" cy="160" rx="20" ry="6" fill="#c8e8ff" opacity="0.5"/>
+ <!-- Stars -->
+ <circle cx="50" cy="30" r="1.5" fill="white" opacity="0.8"/>
+ <circle cx="150" cy="20" r="1" fill="white" opacity="0.7"/>
+ <circle cx="300" cy="35" r="1.5" fill="white" opacity="0.8"/>
+ <circle cx="350" cy="15" r="1" fill="white" opacity="0.6"/>
+ </svg>
+ <span class="card-badge badge-polar">🧊 POLAR</span>
+ </div>
+ <div class="card-body">
+ <div class="card-category">Climate Change · Arctic</div>
+ <h3 class="card-title">Arctic Sea Ice Hits Second-Lowest Extent Ever Recorded This Winter Season</h3>
+ <p class="card-excerpt">New satellite data from NSIDC reveals alarming decline in polar ice coverage, with long-term implications for global weather patterns and ocean circulation systems.</p>
+ <div class="card-footer">
+ <div class="card-author">
+ <div class="mini-avatar">🧊</div>
+ <span>Dr. Sofia Petersen · 6h ago</span>
+ </div>
+ <div class="card-stats">
+ <span>👁 28.4K</span>
+ <span>💬 214</span>
+ </div>
+ </div>
+ </div>
+ </div>
+ <!-- Card 3 -->
+ <div class="card">
+ <div class="card-img">
+ <!-- SVG: Heat wave desert -->
+ <svg viewBox="0 0 400 225" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+ <linearGradient id="desertSky" x1="0" y1="0" x2="0" y2="1">
+ <stop offset="0%" stop-color="#200500"/>
+ <stop offset="40%" stop-color="#8B2500"/>
+ <stop offset="70%" stop-color="#d44000"/>
+ <stop offset="100%" stop-color="#ff8c00"/>
+ </linearGradient>
+ <radialGradient id="sun" cx="70%" cy="25%" r="20%">
+ <stop offset="0%" stop-color="#fff0a0"/>
+ <stop offset="40%" stop-color="#ffcc00" stop-opacity="0.8"/>
+ <stop offset="100%" stop-color="transparent"/>
+ </radialGradient>
+ </defs>
+ <rect width="400" height="225" fill="url(#desertSky)"/>
+ <circle cx="280" cy="55" r="40" fill="url(#sun)"/>
+ <circle cx="280" cy="55" r="28" fill="#fff5b0" opacity="0.9"/>
+ <circle cx="280" cy="55" r="20" fill="white" opacity="0.95"/>
+ <!-- Heat haze lines -->
+ <g stroke="#ff8c00" stroke-width="1" fill="none" opacity="0.15">
+ <path d="M0 150 Q100 145 200 152 Q300 159 400 150"/>
+ <path d="M0 160 Q80 154 160 162 Q240 170 320 162 Q360 158 400 160"/>
+ </g>
+ <!-- Desert floor -->
+ <path d="M0 175 Q100 168 200 175 Q300 182 400 175 L400 225 L0 225Z" fill="#8B4513" opacity="0.9"/>
+ <!-- Sand dunes -->
+ <path d="M0 185 Q50 170 100 178 Q150 186 200 175 Q250 164 300 172 Q350 180 400 172 L400 225 L0 225Z" fill="#a0522d"/>
+ <path d="M0 200 Q60 192 120 198 Q180 204 240 196 Q300 188 360 195 Q380 198 400 194 L400 225 L0 225Z" fill="#cd853f"/>
+ <!-- Cacti silhouette -->
+ <g fill="#2d1000">
+ <rect x="60" y="155" width="8" height="30"/>
+ <rect x="56" y="165" width="16" height="5" rx="2"/>
+ <rect x="53" y="162" width="6" height="12" rx="2"/>
+ <rect x="67" y="160" width="6" height="12" rx="2"/>
+ <rect x="150" y="160" width="6" height="25"/>
+ <rect x="146" y="170" width="14" height="4" rx="2"/>
+ </g>
+ </svg>
+ <span class="card-badge badge-extreme">🌡️ HEAT ALERT</span>
+ </div>
+ <div class="card-body">
+ <div class="card-category">Extreme Heat · Europe</div>
+ <h3 class="card-title">Southern Europe Bakes Under Unprecedented Heat Dome — 48.7°C in Seville</h3>
+ <p class="card-excerpt">The Iberian Peninsula and Mediterranean coast are experiencing what climatologists are calling a "heat apocalypse" with records shattered across Spain, Portugal, and Italy.</p>
+ <div class="card-footer">
+ <div class="card-author">
+ <div class="mini-avatar">🌡️</div>
+ <span>Carlos Mendez · 2h ago</span>
+ </div>
+ <div class="card-stats">
+ <span>👁 51.8K</span>
+ <span>💬 445</span>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ </div><!-- /featured-grid -->
+
+ <!-- IN-CONTENT AD 728x90 -->
+ <div style="text-align:center; margin: 1.5rem 0;">
+ <div class="ad-label" style="font-size:0.6rem; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:6px;">Advertisement</div>
+ <div class="ad-rectangle">
+ <div>
+ <div class="ad-placeholder-text">ADVERTISEMENT — 728 × 90 BANNER</div>
+ <div class="ad-size-label">In-Content Ad Space</div>
+ </div>
+ </div>
+ </div>
+ <!-- CLIMATE SECTION -->
+ <div class="section-head" style="margin-top:2.5rem;">
+ <div class="section-title">🌍 <span>CLIMATE</span> SCIENCE</div>
+ <a href="#" class="see-all">View All →</a>
+ </div>
+
+ <div class="article-list">
+ <!-- Row Article 1 -->
+ <div class="article-row">
+ <div class="row-img">
+ <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+ <linearGradient id="co2" x1="0" y1="0" x2="0" y2="1">
+ <stop offset="0%" stop-color="#1a0a00"/>
+ <stop offset="100%" stop-color="#3d1a00"/>
+ </linearGradient>
+ </defs>
+ <rect width="200" height="140" fill="url(#co2)"/>
+ <!-- Rising CO2 visualization -->
+ <path d="M10 120 Q30 90 50 95 Q70 100 90 70 Q110 40 130 45 Q150 50 170 20 Q185 5 200 10" stroke="#ff8c42" stroke-width="3" fill="none"/>
+ <path d="M10 120 Q30 90 50 95 Q70 100 90 70 Q110 40 130 45 Q150 50 170 20 Q185 5 200 10 L200 140 L10 140Z" fill="#ff8c42" opacity="0.15"/>
+ <!-- Grid lines -->
+ <g stroke="#ffffff" stroke-width="0.5" opacity="0.1">
+ <line x1="10" y1="30" x2="200" y2="30"/><line x1="10" y1="55" x2="200" y2="55"/>
+ <line x1="10" y1="80" x2="200" y2="80"/><line x1="10" y1="105" x2="200" y2="105"/>
+ </g>
+ <text x="12" y="15" fill="#ff8c42" font-size="10" font-family="monospace">CO₂ ppm</text>
+ <text x="155" y="18" fill="#f5c842" font-size="9" font-family="monospace">425.3</text>
+ </svg>
+ </div>
+ <div class="row-body">
+ <div class="row-cat">Climate Science</div>
+ <h3 class="row-title">Atmospheric CO₂ Reaches 425 ppm — Scientists Sound Alarm on Irreversible Tipping Points</h3>
+ <p class="row-excerpt">New Mauna Loa Observatory data shows carbon dioxide concentration reaching historic highs, triggering urgent calls for immediate emissions reductions at this week's IPCC emergency session in Geneva.</p>
+ <div class="row-meta">
+ <span>👤 Dr. Amara Osei</span>
+ <span>📅 Today, 09:14</span>
+ <span>👁 33.2K views</span>
+ <span>⏱ 12 min read</span>
+ </div>
+ </div>
+ </div>
+ <!-- Row Article 2 -->
+ <div class="article-row">
+ <div class="row-img">
+ <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+ <rect width="200" height="140" fill="#001428"/>
+ <!-- Jet stream visualization -->
+ <path d="M0 90 Q50 30 100 70 Q150 110 200 50" stroke="#00aaff" stroke-width="4" fill="none" stroke-dasharray="8 4"/>
+ <path d="M0 80 Q50 20 100 60 Q150 100 200 40" stroke="#00e5b0" stroke-width="2" fill="none" stroke-dasharray="6 6" opacity="0.6"/>
+ <!-- Arrow heads -->
+ <polygon points="195,38 200,50 188,46" fill="#00e5b0" opacity="0.6"/>
+ <polygon points="196,48 200,50 193,58" fill="#00aaff"/>
+ <!-- Globe outline -->
+ <circle cx="100" cy="70" r="55" fill="none" stroke="#1a4a80" stroke-width="1" opacity="0.4"/>
+ <ellipse cx="100" cy="70" rx="55" ry="20" fill="none" stroke="#1a3a60" stroke-width="1" opacity="0.3"/>
+ <text x="12" y="15" fill="#00aaff" font-size="9" font-family="monospace">JET STREAM</text>
+ </svg>
+ </div>
+ <div class="row-body">
+ <div class="row-cat">Atmospheric Dynamics</div>
+ <h3 class="row-title">Polar Jet Stream Enters Unprecedented Meandering State — Global Weather Patterns Disrupted</h3>
+ <p class="row-excerpt">A dramatic weakening of the stratospheric polar vortex has sent the jet stream into an unusually wavy pattern, driving extreme cold outbreaks south while pushing anomalous warmth into the Arctic.</p>
+ <div class="row-meta">
+ <span>👤 Prof. James Thornton</span>
+ <span>📅 Yesterday</span>
+ <span>👁 19.7K views</span>
+ <span>⏱ 15 min read</span>
+ </div>
+ </div>
+ </div>
+ <!-- Row Article 3 -->
+ <div class="article-row">
+ <div class="row-img">
+ <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+ <linearGradient id="rainGrad" x1="0" y1="0" x2="0" y2="1">
+ <stop offset="0%" stop-color="#0a1e3a"/>
+ <stop offset="100%" stop-color="#001428"/>
+ </linearGradient>
+ </defs>
+ <rect width="200" height="140" fill="url(#rainGrad)"/>
+ <!-- Rain -->
+ <g stroke="#4488cc" stroke-width="1.5" opacity="0.7">
+ <line x1="20" y1="30" x2="15" y2="55"/><line x1="40" y1="20" x2="35" y2="45"/>
+ <line x1="60" y1="35" x2="55" y2="60"/><line x1="80" y1="25" x2="75" y2="50"/>
+ <line x1="100" y1="30" x2="95" y2="55"/><line x1="120" y1="20" x2="115" y2="45"/>
+ <line x1="140" y1="35" x2="135" y2="60"/><line x1="160" y1="25" x2="155" y2="50"/>
+ <line x1="180" y1="30" x2="175" y2="55"/>
+ <line x1="30" y1="65" x2="25" y2="90"/><line x1="50" y1="55" x2="45" y2="80"/>
+ <line x1="70" y1="70" x2="65" y2="95"/><line x1="90" y1="60" x2="85" y2="85"/>
+ <line x1="110" y1="65" x2="105" y2="90"/><line x1="130" y1="55" x2="125" y2="80"/>
+ <line x1="150" y1="70" x2="145" y2="95"/><line x1="170" y1="60" x2="165" y2="85"/>
+ <line x1="190" y1="65" x2="185" y2="90"/>
+ </g>
+ <!-- Flood water -->
+ <path d="M0 110 Q50 100 100 108 Q150 116 200 108 L200 140 L0 140Z" fill="#003366" opacity="0.8"/>
+ <text x="12" y="15" fill="#4488cc" font-size="9" font-family="monospace">FLOOD WATCH</text>
+ </svg>
+ </div>
+ <div class="row-body">
+ <div class="row-cat">Flooding · Hydrology</div>
+ <h3 class="row-title">Atmospheric River Dumps Record 18 Inches of Rain in 48 Hours on Pacific Northwest</h3>
+ <p class="row-excerpt">State of emergency declared across three Pacific Northwest states as unprecedented rainfall triggers catastrophic flooding, mudslides, and river cresting at historic levels not seen in over 150 years of record-keeping.</p>
+ <div class="row-meta">
+ <span>👤 Rachel Kim</span>
+ <span>📅 March 24</span>
+ <span>👁 27.1K views</span>
+ <span>⏱ 10 min read</span>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- DOUBLE AD BLOCK -->
+ <div class="ad-double">
+ <div class="ad-medium-rect">
+ <div class="ad-label">Advertisement</div>
+ <div class="ad-placeholder-text" style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--muted);opacity:0.5;">300 × 250 MEDIUM RECTANGLE</div>
+ <div class="ad-size-label">Ad Space Available</div>
+ </div>
+ <div class="ad-medium-rect">
+ <div class="ad-label">Advertisement</div>
+ <div class="ad-placeholder-text" style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--muted);opacity:0.5;">300 × 250 MEDIUM RECTANGLE</div>
+ <div class="ad-size-label">Ad Space Available</div>
+ </div>
+ </div>
+ <!-- CATEGORIES ROW -->
+ <div class="section-head">
+ <div class="section-title">🗂 <span>EXPLORE</span> TOPICS</div>
+ </div>
+ <div class="categories-grid">
+ <div class="cat-card"><div class="cat-icon">🌀</div><div class="cat-name">Hurricanes</div><div class="cat-count">1,842 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">🌡️</div><div class="cat-name">Heat Waves</div><div class="cat-count">923 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">❄️</div><div class="cat-name">Winter Storms</div><div class="cat-count">1,147 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">⛈️</div><div class="cat-name">Thunderstorms</div><div class="cat-count">2,031 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">🌪️</div><div class="cat-name">Tornadoes</div><div class="cat-count">1,388 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">🌊</div><div class="cat-name">Flooding</div><div class="cat-count">1,064 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">🌫️</div><div class="cat-name">Fog & Mist</div><div class="cat-count">445 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">🌤️</div><div class="cat-name">Forecasting</div><div class="cat-count">3,217 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">🌍</div><div class="cat-name">Climate Change</div><div class="cat-count">2,694 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">🏔️</div><div class="cat-name">Mountain Wx</div><div class="cat-count">678 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">🌬️</div><div class="cat-name">Wind Events</div><div class="cat-count">891 articles</div></div>
+ <div class="cat-card"><div class="cat-icon">☀️</div><div class="cat-name">Solar & UV</div><div class="cat-count">534 articles</div></div>
+ </div>
+
+ <!-- RESEARCH SECTION -->
+ <div class="section-head">
+ <div class="section-title">🔬 <span>RESEARCH</span> & SCIENCE</div>
+ <a href="#" class="see-all">View All →</a>
+ </div>
+ <div class="featured-grid" style="grid-template-columns: repeat(3, 1fr);">
+ <!-- Research Card 1 -->
+ <div class="card">
+ <div class="card-img">
+ <svg viewBox="0 0 400 225" xmlns="http://www.w3.org/2000/svg">
+ <rect width="400" height="225" fill="#001a11"/>
+ <!-- Satellite dish -->
+ <path d="M200 120 Q280 80 340 140 Q260 180 200 120" fill="#2d3748" stroke="#4a5568" stroke-width="2"/>
+ <ellipse cx="270" cy="130" rx="80" ry="40" fill="#1a202c" stroke="#4a5568" stroke-width="2" transform="rotate(-30 270 130)"/>
+ <path d="M270 130 L220 80 M270 130 L240 100" stroke="#718096" stroke-width="3"/>
+ <circle cx="220" cy="80" r="10" fill="#e2e8f0"/>
+ <!-- Signals -->
+ <path d="M200 60 Q180 40 150 50" stroke="#00e5b0" stroke-width="3" fill="none" opacity="0.8"/>
+ <path d="M180 30 Q150 10 110 20" stroke="#00e5b0" stroke-width="2" fill="none" opacity="0.6"/>
+ <path d="M160 0 Q120 -20 70 -10" stroke="#00e5b0" stroke-width="1" fill="none" opacity="0.4"/>
+ <circle cx="50" cy="50" r="40" fill="none" stroke="#4a5568" stroke-width="1" opacity="0.3"/>
+ <circle cx="50" cy="50" r="38" fill="none" stroke="#4a5568" stroke-width="1" opacity="0.3" stroke-dasharray="4 4"/>
+ </svg>
+ <span class="card-badge badge-research">🛰️ SATELLITE</span>
+ </div>
+ <div class="card-body">
+ <div class="card-category">Technology · Observation</div>
+ <h3 class="card-title">Next-Gen GOES-U Satellite Promises Unprecedented Lightning Mapping Capabilities</h3>
+ <p class="card-excerpt">The newest addition to the NOAA geostationary fleet will feature advanced atmospheric imaging and the first-ever operational coronagraph for space weather monitoring.</p>
+ <div class="card-footer">
+ <div class="card-author"><div class="mini-avatar">🚀</div><span>Dr. Alan Chen · 1d ago</span></div>
+ <div class="card-stats"><span>👁 14.5K</span><span>💬 88</span></div>
+ </div>
+ </div>
+ </div>
+ <!-- Research Card 2 -->
+ <div class="card">
+ <div class="card-img">
+ <svg viewBox="0 0 400 225" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+ <linearGradient id="oceanGrad" x1="0" y1="0" x2="0" y2="1">
+ <stop offset="0%" stop-color="#002244"/>
+ <stop offset="100%" stop-color="#000810"/>
+ </linearGradient>
+ <linearGradient id="warmCurrent" x1="0" y1="0" x2="1" y2="0">
+ <stop offset="0%" stop-color="#ff4400" stop-opacity="0.8"/>
+ <stop offset="100%" stop-color="#ffaa00" stop-opacity="0.4"/>
+ </linearGradient>
+ <linearGradient id="coldCurrent" x1="1" y1="0" x2="0" y2="0">
+ <stop offset="0%" stop-color="#0088ff" stop-opacity="0.8"/>
+ <stop offset="100%" stop-color="#0044aa" stop-opacity="0.4"/>
+ </linearGradient>
+ </defs>
+ <rect width="400" height="225" fill="url(#oceanGrad)"/>
+ <!-- AMOC visualization -->
+ <path d="M50 180 Q150 150 200 100 T350 40" fill="none" stroke="url(#warmCurrent)" stroke-width="12" stroke-linecap="round"/>
+ <path d="M350 50 Q250 80 200 130 T50 190" fill="none" stroke="url(#coldCurrent)" stroke-width="8" stroke-linecap="round"/>
+ <!-- Current arrows -->
+ <polygon points="340,35 355,40 340,45" fill="#ffaa00"/>
+ <polygon points="60,185 45,190 60,195" fill="#0088ff"/>
+ <!-- Depth lines -->
+ <g stroke="#ffffff" stroke-width="1" opacity="0.1">
+ <line x1="0" y1="50" x2="400" y2="50"/><line x1="0" y1="100" x2="400" y2="100"/>
+ <line x1="0" y1="150" x2="400" y2="150"/><line x1="0" y1="200" x2="400" y2="200"/>
+ </g>
+ <text x="10" y="20" fill="#0088ff" font-size="12" font-family="monospace">AMOC CIRCULATION</text>
+ </svg>
+ <span class="card-badge badge-research">🌊 OCEANOGRAPHY</span>
+ </div>
+ <div class="card-body">
+ <div class="card-category">Marine Science · Circulation</div>
+ <h3 class="card-title">Atlantic Meridional Overturning Circulation Shows Further Signs of Weakening</h3>
+ <p class="card-excerpt">A new meta-analysis of deep-ocean sensor arrays reveals the vital AMOC current system has slowed by 15% since the mid-20th century, confirming climate model predictions.</p>
+ <div class="card-footer">
+ <div class="card-author"><div class="mini-avatar">🌊</div><span>Dr. Maria Santos · 2d ago</span></div>
+ <div class="card-stats"><span>👁 21.3K</span><span>💬 156</span></div>
+ </div>
+ </div>
+ </div>
+ <!-- Research Card 3 -->
+ <div class="card">
+ <div class="card-img">
+ <svg viewBox="0 0 400 225" xmlns="http://www.w3.org/2000/svg">
+ <rect width="400" height="225" fill="#1a1025"/>
+ <!-- Computer / AI Code -->
+ <rect x="40" y="40" width="320" height="145" rx="8" fill="#0a0510" stroke="#3d2050" stroke-width="2"/>
+ <circle cx="55" cy="55" r="4" fill="#ff5f56"/>
+ <circle cx="70" cy="55" r="4" fill="#ffbd2e"/>
+ <circle cx="85" cy="55" r="4" fill="#27c93f"/>
+ <line x1="40" y1="70" x2="360" y2="70" stroke="#3d2050" stroke-width="1"/>
+ <!-- Code lines -->
+ <g fill="none" stroke-width="3" stroke-linecap="round">
+ <line x1="55" y1="90" x2="150" y2="90" stroke="#ff7b72"/>
+ <line x1="160" y1="90" x2="220" y2="90" stroke="#79c0ff"/>
+ <line x1="75" y1="110" x2="280" y2="110" stroke="#d2a8ff"/>
+ <line x1="75" y1="130" x2="180" y2="130" stroke="#a5d6ff"/>
+ <line x1="190" y1="130" x2="310" y2="130" stroke="#ff7b72"/>
+ <line x1="55" y1="150" x2="120" y2="150" stroke="#79c0ff"/>
+ <line x1="130" y1="150" x2="250" y2="150" stroke="#a5d6ff"/>
+ </g>
+ <!-- Neural net nodes overlay -->
+ <circle cx="280" cy="110" r="15" fill="#d2a8ff" opacity="0.3"/>
+ <circle cx="320" cy="90" r="10" fill="#79c0ff" opacity="0.4"/>
+ <circle cx="330" cy="140" r="12" fill="#ff7b72" opacity="0.3"/>
+ <line x1="280" y1="110" x2="320" y2="90" stroke="white" stroke-width="1" opacity="0.5"/>
+ <line x1="280" y1="110" x2="330" y2="140" stroke="white" stroke-width="1" opacity="0.5"/>
+ <line x1="320" y1="90" x2="330" y2="140" stroke="white" stroke-width="1" opacity="0.5"/>
+ <text x="110" y="58" fill="#a5d6ff" font-size="10" font-family="monospace" opacity="0.8">predict_weather_model.py</text>
+ <circle cx="100" cy="80" r="3"/>
+ <line x1="105" y1="80" x2="115" y2="80" stroke="white" stroke-width="1.5"/>
+ <circle cx="110" cy="80" r="3"/>
+ <line x1="115" y1="80" x2="125" y2="80" stroke="white" stroke-width="1.5"/>
+ </svg>
+ <span class="card-badge badge-research">💻 AI MODELING</span>
+ </div>
+ <div class="card-body">
+ <div class="card-category">Machine Learning · Forecasting</div>
+ <h3 class="card-title">GraphCast AI Matches European Model Accuracy with 1000x Less Computing Power</h3>
+ <p class="card-excerpt">Deep learning models trained on 40 years of reanalysis data are revolutionizing medium-range forecasting, producing 10-day global forecasts in under a minute on a single desktop GPU.</p>
+ <div class="card-footer">
+ <div class="card-author"><div class="mini-avatar">🤖</div><span>Dr. Kevin Wei · 3d ago</span></div>
+ <div class="card-stats"><span>👁 32.7K</span><span>💬 284</span></div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- IN-CONTENT AD 300x250 centered -->
+ <div style="display:flex; justify-content:center; margin: 3rem 0;">
+ <div class="ad-medium-rect" style="width: 300px; text-align:center;">
+ <div class="ad-label">Advertisement</div>
+ <div style="width:300px; height:250px; background: linear-gradient(135deg, #1a3a6b, #0d2040); border: 1px dashed rgba(100,170,220,0.3); display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+ <div>
+ <div class="ad-placeholder-text" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:var(--muted);opacity:0.6;">300 × 250</div>
+ <div class="ad-size-label" style="font-size: 0.65rem; color: var(--muted); opacity: 0.5; margin-top: 4px;">In-Content Ad Space</div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- TROPICAL SECTION -->
+ <div class="section-head" style="margin-top:2.5rem;">
+ <div class="section-title">🌀 <span>TROPICAL</span> WEATHER</div>
+ <a href="#" class="see-all">View All →</a>
+ </div>
  <div class="featured-grid" style="grid-template-columns: repeat(3, 1fr);">
  <!-- Tropical Card 1 -->
  <div class="card">
